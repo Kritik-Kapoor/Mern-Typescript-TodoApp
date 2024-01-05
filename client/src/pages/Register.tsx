@@ -2,6 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { useAppDispatch } from "../hooks";
+import { setUser } from "../store/slices/UserSlice";
 
 type Inputs = {
   username: string;
@@ -13,6 +15,7 @@ const Register = () => {
 
   const [error, setError] = useState<string>("");
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const {
     register,
@@ -27,7 +30,8 @@ const Register = () => {
         email: data.email,
         password: data.password,
       })
-      .then(function () {
+      .then(function (response) {
+        dispatch(setUser({ ...response.data }));
         navigate("/todos");
       })
       .catch(function (error) {

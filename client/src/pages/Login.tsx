@@ -2,6 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { useAppDispatch } from "../hooks";
+import { setUser } from "../store/slices/UserSlice";
 
 type Inputs = {
   email: string;
@@ -13,6 +15,7 @@ const Login = () => {
 
   const [error, setError] = useState<string>("");
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const {
     register,
@@ -22,11 +25,9 @@ const Login = () => {
 
   const loginUser = async (data: Inputs) => {
     axios
-      .post(loginApi, {
-        email: data.email,
-        password: data.password,
-      })
-      .then(function () {
+      .post(loginApi, { email: data.email, password: data.password })
+      .then(function (response) {
+        dispatch(setUser({ ...response.data }));
         navigate("/todos");
       })
       .catch(function (error) {
@@ -56,7 +57,7 @@ const Login = () => {
         <div className="flex flex-col">
           <label htmlFor="password">Password</label>
           <input
-            type="text"
+            type="password"
             id="password"
             className="border border-slate-400 p-2 rounded-md"
             {...register("password", {

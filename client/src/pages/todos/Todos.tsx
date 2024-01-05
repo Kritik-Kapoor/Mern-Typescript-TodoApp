@@ -1,6 +1,7 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useAppSelector } from "../../hooks";
 
 type Inputs = {
   todo: string;
@@ -11,24 +12,31 @@ type todosObject = {
   id: string;
 };
 
-const Todos = () => {
-  const addTodoApi = `${import.meta.env.VITE_BASE_URL}addTodo`;
+//get all todos
 
+const Todos = () => {
+  // const getTodosApi = `${import.meta.env.VITE_BASE_URL}get-todos`;
+  const addTodoApi = `${import.meta.env.VITE_BASE_URL}add-todo`;
+
+  const userData = useAppSelector((state) => state.userReducer);
   const [todos, setTodos] = useState<todosObject[]>([]);
   const [error, setError] = useState<string>("");
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitSuccessful },
+    reset,
   } = useForm<Inputs>();
 
   const addTodo = async (data: Inputs) => {
     await axios
       .post(addTodoApi, {
-        email: "test@gmail.com",
+        email: userData.email,
         todo: data.todo,
+        id: new Date(),
       })
       .then((response) => {
+        console.log(response);
         setTodos((prev) => {
           return [...prev, response.data.data];
         });
@@ -37,7 +45,13 @@ const Todos = () => {
         setError(error.response.data.message);
       });
   };
-  console.log(todos);
+
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset();
+    }
+  }, [reset, isSubmitSuccessful]);
+
   return (
     <div className="w-[700px]">
       <h4 className="mb-5 text-2xl text-center">Todos</h4>

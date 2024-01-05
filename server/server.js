@@ -1,11 +1,18 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
 
 const app = express();
 const port = 3001;
 app.use(cors());
 app.use(express.json());
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
+app.use(bodyParser.json());
 
 const { Schema } = mongoose;
 
@@ -16,7 +23,7 @@ const userSchema = new Schema({
 });
 const todosSchema = new Schema({
   email: { type: String, required: true },
-  todo: { type: String, required: true },
+  todos: { type: Array, required: true },
 });
 const User = mongoose.model("User", userSchema);
 const Todo = mongoose.model("Todo", todosSchema);
@@ -33,7 +40,8 @@ app.post("/register", async (req, res) => {
   } else {
     await User.create({ username, email, password });
     res.json({
-      message: "new user registered",
+      name: username,
+      email: email,
     });
     res.status(200);
   }
@@ -51,30 +59,53 @@ app.post("/login", async (req, res) => {
   }
   res.status(200);
   res.json({
-    message: "Valid credentials",
+    name: exists.username,
+    email: exists.email,
   });
 });
 
-app.post("/addTodo", async (req, res) => {
-  const { email, todo } = req.body;
-  const newTodo = await Todo.create({ email, todo });
-  if (newTodo) {
+app.post("/add-todo", async (req, res) => {
+  const { email, todo, id } = req.body;
+  const listExists = await Todo.findOne({ email });
+  if (listExists) {
+    await Todo.findOneAndUpdate(
+      { email },
+      {
+        $push: {
+          todos: {
+            id: id,
+            todo,
+          },
+        },
+      },
+      {
+        new: true,
+      }
+    );
     res.status(200);
     res.json({
       message: "New todo added",
       data: {
-        todo: newTodo.todo,
-        id: newTodo._id,
+        id: id,
+        todo,
       },
     });
   } else {
-    res.status(500);
-    res.json({
-      message: "Failed to add todo",
+    await Todo.create({
+      email,
+      todos: {
+        id: id,
+        todo,
+      },
     });
-    return;
+    res.json({
+      message: "new user registered",
+    });
+    res.status(200);
   }
 });
+
+//Api for getting all todos
 
 app.listen(port, () => {
   console.log("listening on port 5173");
