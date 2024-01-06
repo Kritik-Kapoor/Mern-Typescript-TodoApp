@@ -21,10 +21,12 @@ const userSchema = new Schema({
   email: { type: String, required: true },
   password: { type: String, required: true },
 });
+
 const todosSchema = new Schema({
   email: { type: String, required: true },
   todos: { type: Array, required: true },
 });
+
 const User = mongoose.model("User", userSchema);
 const Todo = mongoose.model("Todo", todosSchema);
 
@@ -75,6 +77,7 @@ app.post("/add-todo", async (req, res) => {
           todos: {
             id: id,
             todo,
+            status: 0,
           },
         },
       },
@@ -88,6 +91,7 @@ app.post("/add-todo", async (req, res) => {
       data: {
         id: id,
         todo,
+        status: 0,
       },
     });
   } else {
@@ -96,16 +100,84 @@ app.post("/add-todo", async (req, res) => {
       todos: {
         id: id,
         todo,
+        status: 0,
       },
     });
     res.json({
-      message: "new user registered",
+      message: "New todos field created",
+      data: {
+        id: id,
+        todo,
+        status: 0,
+      },
     });
     res.status(200);
   }
 });
 
-//Api for getting all todos
+app.post("/get-todos", async (req, res) => {
+  const { email } = req.body;
+  const todos = await Todo.findOne({ email });
+  if (todos) {
+    res.status(200);
+    res.json({
+      todos: todos.todos,
+      message: "Fetched todos",
+    });
+    return;
+  } else if (!todos) {
+    res.status(200);
+    res.json({
+      todos: [],
+    });
+    return;
+  }
+  res.status(500);
+  res.json({
+    message: "Could not fetch todos",
+  });
+});
+
+app.put("/mark-completed", async (req, res) => {
+  const { email, id } = req.body;
+  const updateStatus = await Todo.findOneAndUpdate(
+    { email, "todos.id": id },
+    {
+      $set: {
+        "todos.$.status": 1,
+      },
+    },
+    { new: true }
+  );
+  if (updateStatus) {
+    res.status(200).json({
+      message: "todo status updated",
+      data: updateStatus.todos,
+    });
+  }
+});
+
+app.delete("/delete-todo/:email/:id", async (req, res) => {
+  const { email, id } = req.params;
+  try {
+    const deleteTodo = await Todo.findOneAndUpdate(
+      { email, "todos.id": id },
+      { $pull: { todos: { id: id } } },
+      { new: true }
+    );
+    if (deleteTodo) {
+      res.status(200).json({
+        message: "todo deleted",
+        data: deleteTodo.todos,
+      });
+      return;
+    }
+    res.status(404).json({ message: "Todo not found" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to delete todo" });
+  }
+});
 
 app.listen(port, () => {
   console.log("listening on port 5173");
