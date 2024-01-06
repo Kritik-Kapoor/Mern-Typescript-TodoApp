@@ -1,11 +1,17 @@
-TodoList application created using React and typescript.
-Has authentication so that users can create their own personal accounts.
+The TodoList application was created using React and Typescript.
+It has authentication so that users can create their accounts.
 Ability to perform CRUD operaiton on todos.
 
-Upcoming features :
-Create a new workspace/book.
-Then add todos inside that workspace/book for that specific workspace.
-Email authentication.
-Login with gmail/facebook.
-Add calendar ( users can add date for when they want to finish a todo ).
-The user should get an email and notification when their time to complete a todo is ending.
+## Start App
+1. cd client -> npm run dev
+2. cd server -> nodemon server.js
+
+
+**Upcoming features** :
+- [ ] Create a new list/book.
+- [ ] Then add todos inside that list/book for that specific list.
+- [ ] Email authentication.
+- [ ] Login with Gmail/Facebook.
+- [ ] Add calendar ( users can add a date for when they want to finish a todo ).
+- [ ] The user should get an email and notification when their time to complete a todo is almost over.
+
