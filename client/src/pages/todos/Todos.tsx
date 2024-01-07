@@ -1,10 +1,10 @@
-import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
+import axios from "axios";
 import { useForm } from "react-hook-form";
+import { useParams } from "react-router-dom";
 import { useAppSelector } from "../../hooks";
+import randomId from "../../utils/randomId";
 import { Buttons } from "../../components/Buttons";
-
-//Replace email with ObjectId
 
 type Inputs = {
   todo: string;
@@ -31,27 +31,29 @@ const Todos = () => {
     formState: { errors, isSubmitSuccessful },
     reset,
   } = useForm<Inputs>();
+  const { id } = useParams();
 
   const getTodos = useCallback(async () => {
     await axios
       .post(getTodosApi, {
-        email: userData.email,
+        id: id,
       })
       .then(function (response) {
+        console.log(response);
         setTodos(response.data.todos);
       })
       .catch(function (error) {
-        setTodos(error.response.data.todos);
+        setTodos([]);
         setError(error.response.data.message);
       });
-  }, [getTodosApi, userData]);
+  }, [getTodosApi, id]);
 
   const addTodo = async (data: Inputs) => {
     await axios
       .post(addTodoApi, {
-        email: userData.email,
+        list_id: id,
         todo: data.todo,
-        id: new Date(),
+        todo_id: randomId(),
       })
       .then((response) => {
         setTodos((prev) => {
@@ -64,25 +66,26 @@ const Todos = () => {
   };
 
   const markAsCompleted = useCallback(
-    async (id: string) => {
+    async (todo_id: string) => {
       await axios
         .put(markAsCompletedApi, {
-          email: userData.email,
-          id: id,
+          list_id: id,
+          todo_id,
         })
         .then((response) => {
+          console.log(response);
           setTodos(response.data.data);
         })
         .catch(function (error) {
           setError(error.response.data.message);
         });
     },
-    [markAsCompletedApi, userData]
+    [markAsCompletedApi, id]
   );
 
-  const deleteTodo = async (id: string) => {
+  const deleteTodo = async (todo_id: string) => {
     axios
-      .delete(`${deleteTodoApi}/${userData.email}/${id}`)
+      .delete(`${deleteTodoApi}/${userData.id}/${todo_id}`)
       .then(function (response) {
         setTodos(response.data.data);
       })

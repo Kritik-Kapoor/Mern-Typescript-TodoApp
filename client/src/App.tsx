@@ -3,6 +3,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Todos from "./pages/todos/Todos";
+import Lists from "./pages/todos/Lists";
 
 function App() {
   return (
@@ -11,7 +12,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/todos" element={<Todos />} />
+          <Route path="/lists" element={<Lists />} />
+          <Route path="/todos/:id" element={<Todos />} />
         </Routes>
       </Router>
     </div>

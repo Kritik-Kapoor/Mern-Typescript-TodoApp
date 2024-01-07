@@ -28,7 +28,7 @@ const Login = () => {
       .post(loginApi, { email: data.email, password: data.password })
       .then(function (response) {
         dispatch(setUser({ ...response.data }));
-        navigate("/todos");
+        navigate("/lists");
       })
       .catch(function (error) {
         setError(error.response.data.message);

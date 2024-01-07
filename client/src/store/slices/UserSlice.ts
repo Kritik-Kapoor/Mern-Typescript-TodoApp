@@ -3,12 +3,12 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 
 interface intialStateType {
   name: string;
-  email: string;
+  id: string;
 }
 
 const initialState: intialStateType = {
   name: "",
-  email: "",
+  id: "",
 };
 
 export const userSlice = createSlice({
