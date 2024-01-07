@@ -8,8 +8,8 @@ Ability to perform CRUD operaiton on todos.
 
 
 **Upcoming features** :
-- [ ] Create a new list/book.
-- [ ] Then add todos inside that list/book for that specific list.
+- [x] Create a new list.
+- [ ] Then all the todo features must happen inside that list schema and remove the todo schema at the end.
 - [ ] Email authentication.
 - [ ] Login with Gmail/Facebook.
 - [ ] Add calendar ( users can add a date for when they want to finish a todo ).
