@@ -3,7 +3,6 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { useAppSelector } from "../../hooks";
-import randomId from "../../utils/randomId";
 import { Buttons } from "../../components/Buttons";
 
 type Inputs = {
@@ -11,8 +10,8 @@ type Inputs = {
 };
 
 type todosObject = {
+  _id: string;
   todo: string;
-  id: string;
   status: number;
 };
 
@@ -36,28 +35,28 @@ const Todos = () => {
   const getTodos = useCallback(async () => {
     await axios
       .post(getTodosApi, {
+        user_id: userData.id,
         id: id,
       })
       .then(function (response) {
-        console.log(response);
         setTodos(response.data.todos);
       })
       .catch(function (error) {
         setTodos([]);
         setError(error.response.data.message);
       });
-  }, [getTodosApi, id]);
+  }, [getTodosApi, id, userData]);
 
   const addTodo = async (data: Inputs) => {
     await axios
       .post(addTodoApi, {
+        user_id: userData.id,
         list_id: id,
         todo: data.todo,
-        todo_id: randomId(),
       })
       .then((response) => {
         setTodos((prev) => {
-          return [...prev, response.data.data];
+          return [response.data.data, ...prev];
         });
       })
       .catch(function (error) {
@@ -71,6 +70,7 @@ const Todos = () => {
         .put(markAsCompletedApi, {
           list_id: id,
           todo_id,
+          user_id: userData.id,
         })
         .then((response) => {
           console.log(response);
@@ -80,13 +80,14 @@ const Todos = () => {
           setError(error.response.data.message);
         });
     },
-    [markAsCompletedApi, id]
+    [markAsCompletedApi, userData, id]
   );
 
   const deleteTodo = async (todo_id: string) => {
     axios
-      .delete(`${deleteTodoApi}/${userData.id}/${todo_id}`)
+      .delete(`${deleteTodoApi}/${userData.id}/${id}/${todo_id}`)
       .then(function (response) {
+        console.log(response);
         setTodos(response.data.data);
       })
       .catch(function (error) {
@@ -133,14 +134,14 @@ const Todos = () => {
       </form>
       <div className="mt-5">
         {todos?.map((todo) => (
-          <div key={todo.id} className="flex items-center">
+          <div key={todo._id} className="flex items-center">
             <p className="w-11/12 p-1.5 my-1.5 bg-white shadow-md rounded-md">
               {todo.todo}
             </p>
             {todo.status === 0 ? (
               <i
                 className="fa-regular fa-circle-check fa-xl ms-5 text-green-500 cursor-pointer"
-                onClick={() => markAsCompleted(todo.id)}
+                onClick={() => markAsCompleted(todo._id)}
               ></i>
             ) : (
               <i className="fa-solid fa-circle-check fa-xl ms-5 text-green-500"></i>
@@ -148,7 +149,7 @@ const Todos = () => {
 
             <i
               className="fa-solid fa-trash fa-xl ms-5 text-red-500 cursor-pointer"
-              onClick={() => deleteTodo(todo.id)}
+              onClick={() => deleteTodo(todo._id)}
             ></i>
           </div>
         ))}

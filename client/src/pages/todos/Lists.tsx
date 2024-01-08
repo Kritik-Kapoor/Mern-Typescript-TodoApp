@@ -4,14 +4,13 @@ import { useAppSelector } from "../../hooks";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
-import randomId from "../../utils/randomId";
 
 type Inputs = {
   list_item: string;
 };
 
 type listObject = {
-  id: string;
+  _id: string;
   title: string;
   list_item: [];
   status: number;
@@ -36,12 +35,11 @@ const Lists = () => {
   const createList = async (data: Inputs) => {
     await axios
       .post(createListApi, {
-        id: userData.id,
+        user_id: userData.id,
         list: data.list_item,
-        list_id: randomId(),
       })
       .then(function (response) {
-        setList((prev) => [...prev, response.data.data]);
+        setList([...response.data.data]);
       })
       .catch(function (error) {
         setError(error.response.data.message);
@@ -54,6 +52,7 @@ const Lists = () => {
         id: userData.id,
       })
       .then(function (response) {
+        console.log(response);
         setList(response.data.list);
       })
       .catch(function (error) {
@@ -112,16 +111,16 @@ const Lists = () => {
       </form>
       <div className="mt-5">
         {list?.map((list) => (
-          <div key={list.id} className="flex items-center">
+          <div key={list._id} className="flex items-center">
             <Link
-              to={`/todos/${list.id}`}
+              to={`/todos/${list._id}`}
               className="w-11/12 p-1.5 my-1.5 bg-white shadow-md rounded-md hover:bg-indigo-600 hover:text-white cursor-pointer"
             >
               {list.title}
             </Link>
             <i
               className="fa-solid fa-trash fa-xl ms-5 text-red-500 cursor-pointer"
-              onClick={() => deleteList(list.id)}
+              onClick={() => deleteList(list._id)}
             ></i>
           </div>
         ))}
