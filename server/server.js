@@ -173,6 +173,9 @@ app.post("/add-todo", async (req, res) => {
       const newTodo = await List.findOneAndUpdate(
         { "list._id": new ObjectId(list_id) },
         {
+          $set: {
+            "list.$.status": 0,
+          },
           $push: {
             "list.$.todos": {
               todo,
@@ -257,6 +260,20 @@ app.put("/mark-completed", async (req, res) => {
       const updatedList = updateStatus.list.find((listItem) =>
         listItem._id.equals(new ObjectId(list_id))
       );
+      const allStatusOne = updatedList.todos.every((todo) => todo.status === 1);
+      if (allStatusOne) {
+        await List.updateOne(
+          {
+            user_id: new ObjectId(user_id),
+            "list._id": new ObjectId(list_id),
+          },
+          {
+            $set: {
+              "list.$.status": 1,
+            },
+          }
+        );
+      }
       const updatedTodos = updatedList.todos || [];
       return res.status(200).json({
         message: "todo status updated",
@@ -286,11 +303,31 @@ app.delete("/delete-todo/:id/:list_id/:todo_id", async (req, res) => {
       { $pull: { "list.$.todos": { _id: new ObjectId(todo_id) } } },
       { new: true }
     );
+
     if (deleteTodo) {
       const updatedTodos =
         deleteTodo.list.find((listItem) =>
           listItem._id.equals(new ObjectId(list_id))
         )?.todos || [];
+
+      const updatedList = deleteTodo.list.find((listItem) =>
+        listItem._id.equals(new ObjectId(list_id))
+      );
+      const allStatusOne = updatedList.todos.every((todo) => todo.status === 1);
+      if (allStatusOne) {
+        await List.updateOne(
+          {
+            user_id: new ObjectId(id),
+            "list._id": new ObjectId(list_id),
+          },
+          {
+            $set: {
+              "list.$.status": 1,
+            },
+          }
+        );
+      }
+
       return res.status(200).json({
         message: "todo deleted",
         data: updatedTodos.reverse(),
@@ -298,6 +335,7 @@ app.delete("/delete-todo/:id/:list_id/:todo_id", async (req, res) => {
     }
     return res.status(404).json({ message: "Failed to delete todo" });
   } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ message: "Internal server error at /delete-todo" });
