@@ -49,7 +49,6 @@ app.post("/register", async (req, res) => {
       const newUser = await User.create({ username, email, password });
       if (newUser) {
         return res.status(200).json({
-          name: username,
           id: newUser._id,
         });
       }
@@ -70,7 +69,6 @@ app.post("/login", async (req, res) => {
       });
     }
     return res.status(200).json({
-      name: exists.username,
       id: exists._id,
     });
   } catch (error) {
