@@ -2,12 +2,10 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 interface intialStateType {
-  name: string;
   id: string;
 }
 
 const initialState: intialStateType = {
-  name: "",
   id: "",
 };
 

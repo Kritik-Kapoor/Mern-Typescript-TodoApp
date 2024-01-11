@@ -4,6 +4,7 @@ import { useAppSelector } from "../../hooks";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import Sidebar from "@/components/layout/Sidebar";
 
 type Inputs = {
   list_item: string;
@@ -88,42 +89,47 @@ const Lists = () => {
   }, [getList]);
 
   return (
-    <div className="w-[700px]">
-      <h4 className="mb-5 text-2xl text-center text-white">My Lists</h4>
-      {error && <span className="text-red-500 text-sm">{error}</span>}
-      {errors.list_item && (
-        <span className="text-red-500 text-sm">{errors.list_item.message}</span>
-      )}
-      <form
-        onSubmit={handleSubmit(createList)}
-        className="flex items-center justify-between"
-      >
-        <input
-          type="text"
-          id="list_item"
-          placeholder="Create new list..."
-          className="w-10/12 border border-slate-400 p-2 rounded-md"
-          {...register("list_item", {
-            required: "List is required",
-          })}
-        />
-        <Buttons type="submit" text="Add" classes="w-2/12 p-2 ms-3" />
-      </form>
-      <div className="mt-5">
-        {list?.map((list) => (
-          <div key={list._id} className="flex items-center">
-            <Link
-              to={`/todos/${list._id}`}
-              className="w-11/12 p-1.5 my-1.5 bg-white shadow-md rounded-md hover:bg-indigo-600 hover:text-white cursor-pointer"
-            >
-              {list.title}
-            </Link>
-            <i
-              className="fa-solid fa-trash fa-xl ms-5 text-red-500 cursor-pointer"
-              onClick={() => deleteList(list._id)}
-            ></i>
-          </div>
-        ))}
+    <div>
+      <Sidebar />
+      <div className="w-[700px]">
+        <h4 className="mb-5 text-2xl text-center text-white">My Lists</h4>
+        {error && <span className="text-red-500 text-sm">{error}</span>}
+        {errors.list_item && (
+          <span className="text-red-500 text-sm">
+            {errors.list_item.message}
+          </span>
+        )}
+        <form
+          onSubmit={handleSubmit(createList)}
+          className="flex items-center justify-between"
+        >
+          <input
+            type="text"
+            id="list_item"
+            placeholder="Create new list..."
+            className="w-10/12 border border-slate-400 p-2 rounded-md"
+            {...register("list_item", {
+              required: "List is required",
+            })}
+          />
+          <Buttons type="submit" text="Add" classes="w-2/12 p-2 ms-3" />
+        </form>
+        <div className="mt-5">
+          {list?.map((list) => (
+            <div key={list._id} className="flex items-center">
+              <Link
+                to={`/todos/${list._id}`}
+                className="w-11/12 p-1.5 my-1.5 bg-white shadow-md rounded-md hover:bg-indigo-600 hover:text-white cursor-pointer"
+              >
+                {list.title}
+              </Link>
+              <i
+                className="fa-solid fa-trash fa-xl ms-5 text-red-500 cursor-pointer"
+                onClick={() => deleteList(list._id)}
+              ></i>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

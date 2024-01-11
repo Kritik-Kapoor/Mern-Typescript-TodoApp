@@ -27,6 +27,7 @@ const Login = () => {
     axios
       .post(loginApi, { email: data.email, password: data.password })
       .then(function (response) {
+        console.log(response);
         dispatch(setUser({ ...response.data }));
         navigate("/lists");
       })
