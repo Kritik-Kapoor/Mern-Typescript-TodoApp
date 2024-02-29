@@ -3,7 +3,7 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { useAppSelector } from "../../hooks";
-import { Buttons } from "../../components/Buttons";
+import { Button } from "../../components/ui/button";
 
 type Inputs = {
   todo: string;
@@ -130,7 +130,9 @@ const Todos = () => {
             required: "Todo is required",
           })}
         />
-        <Buttons type="submit" text="Add" classes="w-2/12 p-2 ms-3" />
+        <Button variant={"primary"} className="w-2/12 p-2 ms-3">
+          Add
+        </Button>
       </form>
       <div className="mt-5">
         {todos?.map((todo) => (

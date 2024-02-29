@@ -13,7 +13,7 @@ function App() {
       <div className="absolute top-3 right-3">
         <ModeToggle />
       </div>
-      <div className="h-screen w-full flex items-center justify-center">
+      <div className="h-screen w-full">
         <Router>
           <Routes>
             <Route path="/" element={<Login />} />

@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useAppDispatch } from "../hooks";
 import { setUser } from "../store/slices/UserSlice";
+import { Button } from "../components/ui/button";
 
 type Inputs = {
   email: string;
@@ -37,7 +38,7 @@ const Login = () => {
   };
 
   return (
-    <div className="w-[400px] bg-white shadow-md p-3 rounded-lg">
+    <div className="absolute left-2/4 top-2/4 -translate-x-2/4 -translate-y-2/4 w-[400px] bg-white shadow-md p-3 rounded-lg">
       <h4 className="text-2xl text-center mb-5">Login</h4>
       {error && <span className="text-red-500 text-sm">{error}</span>}
       <form onSubmit={handleSubmit(loginUser)}>
@@ -71,12 +72,9 @@ const Login = () => {
             {errors.password.message}
           </span>
         )}
-        <button
-          type="submit"
-          className="w-full bg-indigo-600 text-white rounded-md p-1.5 mt-4"
-        >
+        <Button variant={"primary"} className="w-full mt-4 text-white">
           Login
-        </button>
+        </Button>
       </form>
       <p className="mt-3 text-center">
         Don't have an account ?{" "}
